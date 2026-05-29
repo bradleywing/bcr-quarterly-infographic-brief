@@ -13,34 +13,46 @@ load_bcr_data <- function(
     )
   }
   
-  # Create a dedicated environment for setup.R
-  setup_env <- new.env(
-    parent = globalenv()
-  )
-  setup_env$etl_dir <- etl_dir
-  
-  # Source setup.R into that environment
-  sys.source(
+  # Load ETL helper environment (build subsets, fiscal date functions,
+  #   cartography files, etc.)
+  source(
     file.path(
       etl_dir,
-      "etl",
-      "setup.R"
+      "etl/setup.R"
     ),
-    envir = setup_env
+    local = environment()
   )
   
-  # Source bcr.R into the same environment
-  sys.source(
-    file.path(
-      etl_dir,
-      "etl",
-      "bcr.R"
-    ),
-    envir = setup_env
-  )
+  store_path <- file.path(
+    etl_dir,
+    "_targets"
+    )
   
-  # Now run the ETL from that environment
-  setup_env$run_bcr_etl(
-    setup_env$bcr_paths
-  )
+  # Run tar_make() inside the ETL repo directory
+  old_dir <- getwd()
+  on.exit(
+    setwd(
+      old_dir
+      ),
+    add = TRUE
+    )
+  
+  setwd(
+    etl_dir
+    )
+  
+  # Ensure ETL is up to date
+  targets::tar_make(
+    store = store_path
+    )
+  
+  # Read the ETL output for BCR
+  bcr_data <- targets::tar_read(
+    bcr_etl,
+    store = store_path
+    )
+  
+  return(
+    bcr_data
+    )
 }

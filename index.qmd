@@ -44,23 +44,15 @@ source(
 
 # Run the function to load BCR data
 bcr_data <- load_bcr_data()
-```
 
-```{r}
-#| label: filter-bcr-data
-
-period <- reporting_period(
-  date = params$report_date,
-  system = params$fiscal_system,
-  period = "quarter"
+# Build subsets
+bcr_subsets <- build_subsets(
+  full_data = bcr_data$bcr_full_data,
+  start_date = params$fiscal_period_start,
+  end_date   = params$fiscal_period_end,
+  fiscal_system = params$fiscal_system
 )
 
-start_date <- period$start
-end_date <- period$end
-
-bcr_full_data <- bcr_data$bcr_full_data |>
-  dplyr::filter(
-    enrollment_starting_date >= start_date,
-    enrollment_starting_date <= end_date
-  )
+bcr_initiated  <- bcr_subsets$initiated_within_period
+bcr_dismissed  <- bcr_subsets$dismissed_within_period
 ```
