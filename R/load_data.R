@@ -46,13 +46,21 @@ load_bcr_data <- function(
     store = store_path
     )
   
-  # Read the ETL output for BCR
+  # Read the ETL outputs for BCR
   bcr_data <- targets::tar_read(
     bcr_etl,
     store = store_path
     )
   
+  cartography_data <- targets::tar_read(
+    cartography_bundle,
+    store = store_path
+    )
+
   return(
-    bcr_data
+    list(
+      bcr_data = bcr_data,
+      cartography_data = cartography_data
+    )
     )
 }
