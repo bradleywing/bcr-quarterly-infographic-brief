@@ -13,13 +13,9 @@ if (
   )
 ) {
   params <- list(
-    report_date = "2026-01-01",
     fiscal_system = "state",
-    period = "quarter",
     start_date = "2026-01-01",
-    end_date = "2026-03-31",
-    fiscal_period_start = "2026-01-01",
-    fiscal_period_end = "2026-03-31"
+    end_date = "2026-03-31"
    )
 }
 
@@ -29,12 +25,7 @@ params$start_date <- lubridate::ymd(
 params$end_date <- lubridate::ymd(
   params$end_date
   )
-params$fiscal_period_start <- lubridate::ymd(
-  params$fiscal_period_start
-  )
-params$fiscal_period_end <- lubridate::ymd(
-  params$fiscal_period_end
-  )
+
 
 
 # Load ETL output
@@ -48,8 +39,8 @@ bcr_data <- load_bcr_data()
 # Build subsets
 bcr_subsets <- build_subsets(
   full_data = bcr_data$bcr_full_data,
-  start_date = params$fiscal_period_start,
-  end_date   = params$fiscal_period_end,
+  start_date = params$start_date,
+  end_date   = params$end_date,
   fiscal_system = params$fiscal_system
 )
 
